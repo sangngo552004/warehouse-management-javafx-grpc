@@ -1,0 +1,74 @@
+/* Nền chính của toàn bộ cửa sổ */
+.root-pane {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #005f73, #0a9396);
+}
+
+/* Hộp VBox chứa form */
+.login-box {
+    -fx-background-color: rgba(255, 255, 255, 0.9); /* Màu trắng hơi mờ */
+    -fx-padding: 30;
+    -fx-border-radius: 15;
+    -fx-background-radius: 15;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 10, 0, 0, 3);
+}
+
+/* Tiêu đề "Đăng nhập Hệ thống" */
+.title-label {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #003049; /* Màu xanh đậm */
+}
+
+/* Các nhãn (IP Server, Tên đăng nhập...) */
+.field-label {
+    -fx-font-size: 14px;
+    -fx-font-weight: 500;
+    -fx-text-fill: #333;
+    -fx-padding: 0 0 -5 0; /* Đẩy nhãn gần ô text hơn */
+    -fx-alignment: center-left;
+    -fx-max-width: infinity; /* Đảm bảo nhãn căn trái */
+}
+
+/* Các ô nhập liệu */
+.text-field {
+    -fx-font-size: 14px;
+    -fx-background-color: #f0f4f8;
+    -fx-border-color: #ccc;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 8;
+}
+
+/* Hiệu ứng khi focus vào ô nhập liệu */
+.text-field:focused {
+    -fx-border-color: #0a9396; /* Màu xanh lá cây */
+    -fx-border-width: 2;
+    -fx-background-color: #ffffff;
+}
+
+/* Nút đăng nhập */
+.login-button {
+    -fx-background-color: #0a9396; /* Màu xanh lá cây */
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 10 20;
+    -fx-max-width: infinity; /* Nút rộng tối đa */
+    -fx-cursor: hand; /* Biểu tượng bàn tay khi di chuột */
+}
+
+/* Hiệu ứng khi di chuột qua nút */
+.login-button:hover {
+    -fx-background-color: #0077b6; /* Đổi màu xanh dương */
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 5, 0, 0, 2);
+}
+
+/* Nhãn báo lỗi */
+.status-label {
+    -fx-font-size: 13px;
+    -fx-text-fill: #d90429; /* Màu đỏ */
+    -fx-font-weight: bold;
+}
