@@ -14,4 +14,11 @@ public class InventoryItem {
 
     public String getProductName() { return productName.get(); }
     public int getQuantity() { return quantity.get(); }
+
+    public SimpleStringProperty productNameProperty() {
+        return productName;
+    }
+    public SimpleIntegerProperty quantityProperty() {
+        return quantity;
+    }
 }
