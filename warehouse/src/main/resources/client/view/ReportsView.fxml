@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.chart.PieChart?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="20.0" styleClass="root-pane" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controller.ReportsController">
+    <children>
+        <Label styleClass="title-label" text="Báo cáo Kho hàng" />
+        
+        <HBox spacing="20.0" VBox.vgrow="ALWAYS">
+            <VBox HBox.hgrow="ALWAYS">
+                <Label styleClass="field-label" text="Tỷ lệ Tồn kho Sản phẩm" />
+                <PieChart fx:id="inventoryPieChart" title="Tỷ lệ Tồn kho" />
+            </VBox>
+            
+            <VBox HBox.hgrow="ALWAYS">
+                <Label styleClass="field-label" text="Thống kê Nhập/Xuất trong ngày" />
+                <BarChart fx:id="activityBarChart" title="Hoạt động Nhập/Xuất">
+                    <xAxis>
+                        <CategoryAxis label="Hoạt động" />
+                    </xAxis>
+                    <yAxis>
+                        <NumberAxis label="Số lượng" />
+                    </yAxis>
+                </BarChart>
+            </VBox>
+        </HBox>
+    </children>
+</VBox>

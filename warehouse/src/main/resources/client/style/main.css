@@ -1,0 +1,175 @@
+/*==================================================
+ * GLOBAL STYLES (Styles Chung)
+ *==================================================*/
+
+/* Nền chung cho các trang con */
+.root-pane {
+    -fx-background-color: #f0f4f8; /* Nền xám rất nhạt */
+}
+
+/* Tiêu đề chính của mỗi trang (ví dụ: "Quản lý Kho hàng") */
+.title-label {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #003049; /* Xanh đậm */
+    -fx-padding: 10 0 20 5;
+}
+
+/* Các nhãn phụ (ví dụ: "Chọn sản phẩm") */
+.field-label {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333;
+}
+
+/* Các ô nhập liệu và ComboBox */
+.text-field, .combo-box {
+    -fx-font-size: 14px;
+    -fx-background-color: #ffffff;
+    -fx-border-color: #ccc;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 8;
+}
+
+.text-field:focused, .combo-box:focused {
+    -fx-border-color: #0a9396; /* Xanh sáng */
+    -fx-border-width: 2;
+}
+
+/*==================================================
+ * MAIN APP WINDOW (Khung ứng dụng chính)
+ *==================================================*/
+
+/* Thanh Header (chứa thông tin user) */
+.header-bar {
+    -fx-background-color: #ffffff;
+    -fx-padding: 10 20;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 10, 0, 0, 5);
+}
+
+.user-info-label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #333;
+}
+
+.user-role-label {
+    -fx-font-size: 12px;
+    -fx-text-fill: #0a9396; /* Xanh sáng */
+    -fx-font-weight: bold;
+}
+
+/*==================================================
+ * NAVIGATION PANE (Thanh Điều hướng)
+ *==================================================*/
+
+/* Nền của thanh điều hướng bên trái */
+.navigation-pane {
+    -fx-background-color: #003049; /* Xanh đậm */
+    -fx-padding: 20 0 0 0;
+    -fx-spacing: 10;
+}
+
+/* Các nút điều hướng */
+.navigation-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-padding: 15 20;
+    -fx-alignment: CENTER_LEFT;
+    -fx-max-width: infinity;
+    -fx-cursor: hand;
+    -fx-background-radius: 0;
+}
+
+/* Hiệu ứng khi di chuột qua nút */
+.navigation-button:hover {
+    -fx-background-color: #005f73; /* Xanh trung */
+}
+
+/* Nút được chọn (Active) */
+.navigation-button:focused {
+    -fx-background-color: #0a9396; /* Xanh sáng */
+    -fx-border-color: white;
+    -fx-border-width: 0 0 0 5; /* Viền trắng bên trái */
+}
+
+/*==================================================
+ * CONTENT & CONTROLS (Nội dung & Nút bấm)
+ *==================================================*/
+
+/* Nút bấm thông thường (Nhập, Xuất) */
+.action-button-green {
+    -fx-background-color: #0a9396; /* Xanh sáng */
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 10 20;
+    -fx-cursor: hand;
+}
+.action-button-green:hover {
+    -fx-background-color: #0077b6; /* Xanh dương (giống login) */
+}
+
+.action-button-blue {
+    -fx-background-color: #005f73; /* Xanh trung */
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 10 20;
+    -fx-cursor: hand;
+}
+.action-button-blue:hover {
+    -fx-background-color: #003049; /* Xanh đậm */
+}
+
+/* Bảng (TableView) */
+.table-view {
+    -fx-border-color: #ccc;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: #005f73; /* Xanh trung */
+    -fx-background-radius: 8 8 0 0;
+}
+
+.table-view .column-header {
+    -fx-background-color: transparent;
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
+
+/* Nút đăng xuất (trạng thái bình thường) */
+.logout-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-padding: 15 20;
+    -fx-alignment: CENTER_LEFT;
+    -fx-max-width: infinity;
+    -fx-cursor: hand;
+    -fx-background-radius: 0;
+    
+    /* Thêm một đường viền mỏng ở trên để tách biệt */
+    -fx-border-color: #005f73; /* Xanh trung */
+    -fx-border-width: 1 0 0 0;
+}
+
+/* Hiệu ứng khi di chuột qua nút Đăng xuất */
+.logout-button:hover {
+    -fx-background-color: #d90429; /* Màu đỏ (lấy từ login.css) */
+    -fx-text-fill: white;
+}
