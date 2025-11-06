@@ -12,6 +12,8 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
+import client.service.GrpcClientService;
+
 public class LoginController {
 
     @FXML private TextField ipField;
@@ -53,7 +55,9 @@ public class LoginController {
             stage.setScene(new Scene(root));
             stage.show();
             
-            
+            stage.setOnCloseRequest(e -> {
+                GrpcClientService.getInstance().close();
+            });
             
         } catch (IOException e) {
             e.printStackTrace();

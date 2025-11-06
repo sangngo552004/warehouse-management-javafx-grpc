@@ -1,46 +1,37 @@
 package common.model;
 
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+
 public class Transaction {
-    private String timestamp;
-    private String clientName;
-    private String action; // "NHAP" / "XUAT"
-    private String product;
-    private int quantity;
-    private String result;
+    private final SimpleStringProperty timestamp;
+    private final SimpleStringProperty clientName;
+    private final SimpleStringProperty action;
+    private final SimpleStringProperty product;
+    private final SimpleIntegerProperty quantity;
+    private final SimpleStringProperty result;
 
     public Transaction(String timestamp, String clientName, String action, String product, int quantity,
             String result) {
-        this.timestamp = timestamp;
-        this.clientName = clientName;
-        this.action = action;
-        this.product = product;
-        this.quantity = quantity;
-        this.result = result;
+        this.timestamp = new SimpleStringProperty(timestamp);
+        this.clientName = new SimpleStringProperty(clientName);
+        this.action = new SimpleStringProperty(action);
+        this.product = new SimpleStringProperty(product);
+        this.quantity = new SimpleIntegerProperty(quantity);
+        this.result = new SimpleStringProperty(result);
     }
     
-    public String getTimestamp() {
-        return timestamp;
-    }
+    public String getTimestamp() { return timestamp.get(); }
+    public String getClientName() { return clientName.get(); }
+    public String getAction() { return action.get(); }
+    public String getProduct() { return product.get(); }
+    public int getQuantity() { return quantity.get(); }
+    public String getResult() { return result.get(); }
 
-    public String getClientName() {
-        return clientName;
-    }
-
-    public String getAction() {
-        return action;
-    }
-
-    public String getProduct() {
-        return product;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public String getResult() {
-        return result;
-    }
-
-
+    public SimpleStringProperty timestampProperty() { return timestamp; }
+    public SimpleStringProperty clientNameProperty() { return clientName; }
+    public SimpleStringProperty actionProperty() { return action; }
+    public SimpleStringProperty productProperty() { return product; }
+    public SimpleIntegerProperty quantityProperty() { return quantity; }
+    public SimpleStringProperty resultProperty() { return result; }
 }

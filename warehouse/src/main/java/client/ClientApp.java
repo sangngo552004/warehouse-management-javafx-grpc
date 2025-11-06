@@ -9,11 +9,14 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 import client.service.GrpcClientService;
+import client.service.SessionManager;
 
 public class ClientApp extends Application {
     @Override
     public void start(Stage primaryStage) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/client/view/Login.fxml"));
+        SessionManager.createSession("test", "Manager"); // Tạo session giả để test giao diện
+        // FXMLLoader loader = new FXMLLoader(getClass().getResource("/client/view/Login.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/client/view/MainAppWindow.fxml"));
         Parent root = loader.load();
 
         primaryStage.setTitle("Warehouse Management System - Login");
