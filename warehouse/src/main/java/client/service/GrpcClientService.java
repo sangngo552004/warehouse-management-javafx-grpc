@@ -7,7 +7,7 @@ import io.grpc.ManagedChannelBuilder;
 public class GrpcClientService {
     private static GrpcClientService instance;
     private ManagedChannel channel;
-    private WarehouseServiceGrpc.WarehouseServiceBlockingStub blockingStub; // Stub để gọi RPC
+    private WarehouseServiceGrpc.WarehouseServiceBlockingStub blockingStub;
 
     private GrpcClientService() {}
 
@@ -33,7 +33,6 @@ public class GrpcClientService {
         }
     }
     
-    // Trả về Stub để các service khác (AuthService) có thể gọi
     public WarehouseServiceGrpc.WarehouseServiceBlockingStub getStub() {
         return blockingStub;
     }
