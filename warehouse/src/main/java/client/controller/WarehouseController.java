@@ -91,6 +91,74 @@ public class WarehouseController {
     }
     
     private void handleTransaction(boolean isImport) {
-        
+        String selectedProduct = productComboBox.getValue();
+        if (selectedProduct == null) {
+            statusLabel.setText("Vui lòng chọn sản phẩm.");
+            return;
+        }
+
+        int quantity;
+        try {
+            quantity = Integer.parseInt(quantityField.getText().trim());
+            if (quantity <= 0) {
+                statusLabel.setText("Số lượng phải là số nguyên dương.");
+                return;
+            }
+        } catch (NumberFormatException e) {
+            statusLabel.setText("Số lượng không hợp lệ.");
+            return;
+        }
+    
+        try {
+            TransactionRequest request = TransactionRequest.newBuilder()
+                .setClientName(SessionManager.getUsername())
+                .setProductId(selectedProduct)
+                .setQuantity(quantity)
+                .build();
+
+            TransactionResponse response;
+            String actionLog;
+
+            if (isImport) {
+                response = grpcClientService.getStub().importProduct(request);
+                actionLog = "NHẬP";
+            } else {
+                response = grpcClientService.getStub().exportProduct(request);
+                actionLog = "XUẤT";
+            }
+
+            if (response.getSuccess()) {
+                String logMsg = String.format("%s %d %s thành công. Tồn kho mới: %d.\n",
+                actionLog, quantity, selectedProduct, response.getNewQuantity());
+                logTextArea.appendText(logMsg);
+                showStatus(logMsg, true);
+                loadInventory();
+            } else{
+                String logMsg = String.format("%s %d %s thất bại: %s\n",
+                        actionLog, quantity, selectedProduct, response.getMessage());
+                logTextArea.appendText(logMsg);
+                showStatus(logMsg, false);
+            }
+            quantityField.clear();
+        } catch (Exception e) {
+            String errorMsg = "Lỗi giao dịch: " + e.getMessage() + "\n";
+            logTextArea.appendText(errorMsg);
+            showStatus(errorMsg, false);
+        }
+    }
+
+    private void showStatus(String message, boolean success) {
+        Platform.runLater(() -> {
+            statusLabel.setText(message);
+            statusLabel.setManaged(true);
+            if (success) {
+                statusLabel.getStyleClass().removeAll("status-label-error");
+                statusLabel.getStyleClass().add("status-label-success");
+            }
+            else {
+                statusLabel.getStyleClass().removeAll("status-label-success");
+                statusLabel.getStyleClass().add("status-label-error");
+            }
+        });
     }
 }
