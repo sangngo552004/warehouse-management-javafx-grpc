@@ -5,7 +5,7 @@ import com.group9.warehouse.grpc.LoginResponse;
 
 public class AuthService {
     private String errorMessage;
-    private GrpcClientService grpcService; 
+    private GrpcClientService grpcService;
 
     public AuthService() {
         this.grpcService = GrpcClientService.getInstance();

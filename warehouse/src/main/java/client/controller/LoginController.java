@@ -37,6 +37,7 @@ public class LoginController {
 
         boolean loginSuccess = new AuthService().login(ip, port, username, password);
         if (loginSuccess) {
+            System.out.print("Đăng nhập thành công");
             statusLabel.setText("Đăng nhập thành công!");
             loadMainAppWindow();
             ipField.getScene().getWindow().hide();
