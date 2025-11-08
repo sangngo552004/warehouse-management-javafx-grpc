@@ -2,31 +2,46 @@ package server;
 
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
+import server.service.AuthService;
+import server.service.HistoryService;
+import server.service.ProductService;
+
+import org.slf4j.Logger; // <-- MỚI
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
 public class ServerApp {
 
     public static final int PORT = 9090;
+    private static final Logger log = LoggerFactory.getLogger(ServerApp.class);
 
     public static void main(String[] args) {
-        System.out.println("Khởi động Warehouse Server...");
+        log.info("Đang khởi tạo các dịch vụ...");
 
-        DataService dataService = new DataService();
+        AuthService authService = new AuthService();
+        ProductService productService = new ProductService();
+        HistoryService historyService = new HistoryService();
+
+        WarehouseServiceImpl warehouseImpl = new WarehouseServiceImpl(
+                authService,
+                productService,
+                historyService
+        );
 
         Server server = ServerBuilder.forPort(PORT)
-                .addService(new WarehouseServiceImpl(dataService))
+                .addService(warehouseImpl)
                 .build();
 
         try {
             server.start();
-            System.out.println("Server đã khởi động thành công trên cổng: " + PORT);
+            log.info("Server đã khởi động, đang lắng nghe trên cổng: {}", PORT);
             server.awaitTermination();
         } catch (IOException e) {
-            System.err.println("Lỗi I/O khi khởi động server: " + e.getMessage());
+            log.error("Lỗi I/O khi khởi động server:", e);
             e.printStackTrace();
         } catch (InterruptedException e) {
-            System.err.println("Server bị gián đoạn: " + e.getMessage());
+            log.error("Server bị gián đoạn:", e);
             e.printStackTrace();
         }
     }

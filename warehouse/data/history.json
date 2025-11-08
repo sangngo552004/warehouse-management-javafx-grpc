@@ -1,0 +1,34 @@
+[
+  {
+    "timestamp": "2025-11-08T23:12:12Z",
+    "clientName": "staff_B",
+    "action": "IMPORT",
+    "product": "Chuột Logitech",
+    "quantity": 10,
+    "result": "Failed (Sản phẩm không tồn tại)"
+  },
+  {
+    "timestamp": "2025-11-08T23:07:55Z",
+    "clientName": "staff_B",
+    "action": "EXPORT",
+    "product": "Chuột Logitech",
+    "quantity": 10,
+    "result": "Failed (Sản phẩm không tồn tại)"
+  },
+  {
+    "timestamp": "2025-11-08T23:07:21Z",
+    "clientName": "staff_B",
+    "action": "IMPORT",
+    "product": "Chuột Logitech",
+    "quantity": 60,
+    "result": "Failed (Sản phẩm không tồn tại)"
+  },
+  {
+    "timestamp": "2025-11-08T17:30:00Z",
+    "clientName": "ClientApp_Init",
+    "action": "IMPORT",
+    "product": "Laptop Dell",
+    "quantity": 15,
+    "result": "Success"
+  }
+]
