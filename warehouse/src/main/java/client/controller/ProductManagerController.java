@@ -65,17 +65,6 @@ public class ProductManagerController {
             System.out.println("Error loading product list: " + e.getMessage());
         }
 
-        // System.out.println("Đang tải danh sách sản phẩm...");
-        
-        // // --- DATA MẪU (để test UI) ---
-        // // Xóa phần này khi kết nối thật
-        // ObservableList<Product> demoData = FXCollections.observableArrayList(
-        //     new Product("LP-DELL", "Laptop Dell"),
-        //     new Product("MS-LOGI", "Chuột Logitech"),
-        //     new Product("KB-CO", "Bàn phím cơ")
-        // );
-        // productsTable.setItems(demoData);
-        // // --- HẾT DATA MẪU ---
     }
 
     @FXML
@@ -106,12 +95,7 @@ public class ProductManagerController {
         } catch (Exception e) {
             addStatusLabel.setText("Lỗi thêm sản phẩm: " + e.getMessage());
         }
-        
-        // System.out.println("Gửi yêu cầu ADD_PRODUCT: " + id + ", " + name);
-        // addStatusLabel.setText("Đã gửi yêu cầu thêm: " + name);
-        // handleClearForm();
-        // // Tải lại danh sách (giả lập)
-        // // loadProductList(); 
+
     }
 
     @FXML

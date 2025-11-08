@@ -22,7 +22,7 @@ public class GrpcClientService {
         try {
             if (channel == null || channel.isShutdown()) {
                 channel = ManagedChannelBuilder.forAddress(ip, port)
-                        .usePlaintext() // Tắt SSL/TLS để test
+                        .usePlaintext()
                         .build();
                 blockingStub = WarehouseServiceGrpc.newBlockingStub(channel);
             }
