@@ -17,16 +17,14 @@ public class AuthInterceptor implements ServerInterceptor {
     public static final Metadata.Key<String> AUTH_TOKEN_KEY =
             Metadata.Key.of("Authorization", Metadata.ASCII_STRING_MARSHALLER);
     private static final Logger log = LoggerFactory.getLogger(AuthInterceptor.class);
-    // Context key để lưu thông tin user sau khi giải mã
+
     public static final Context.Key<String> USERNAME_CONTEXT_KEY = Context.key("username");
     public static final Context.Key<String> ROLE_CONTEXT_KEY = Context.key("role");
 
-    // Danh sách các hàm KHÔNG cần đăng nhập
     private static final Set<String> PUBLIC_METHODS = Set.of(
             "AuthService/Login"
     );
 
-    // Danh sách các hàm CHỈ Manager được dùng
     private static final Set<String> MANAGER_METHODS = Set.of(
             "UserManagementService/GetUsers",
             "UserManagementService/AddUser",
@@ -44,12 +42,11 @@ public class AuthInterceptor implements ServerInterceptor {
 
         String methodName = call.getMethodDescriptor().getFullMethodName();
         log.info("AuthInterceptor: interceptCall: methodName = {}", methodName);
-        // 1. Cho phép truy cập public (Login)
+
         if (PUBLIC_METHODS.contains(methodName)) {
             return next.startCall(call, headers);
         }
 
-        // 2. Các hàm còn lại -> Yêu cầu Token
         String token = headers.get(AUTH_TOKEN_KEY);
         if (token == null) {
             log.error("Thieu token");
@@ -57,13 +54,11 @@ public class AuthInterceptor implements ServerInterceptor {
             return new ServerCall.Listener<>() {};
         }
 
-        // Thường token sẽ là "Bearer <token>". Phải loại bỏ "Bearer "
         if (token.startsWith("Bearer ")) {
             token = token.substring(7);
         }
 
         try {
-            // 3. Giải mã Token
             JWTVerifier verifier = JWT.require(AuthService.JWT_ALGORITHM).build();
             DecodedJWT jwt = verifier.verify(token);
 
@@ -75,14 +70,12 @@ public class AuthInterceptor implements ServerInterceptor {
                 throw new JWTVerificationException("Token không hợp lệ");
             }
 
-            // 4. Ủy quyền (Authorization) - Kiểm tra vai trò
             if (MANAGER_METHODS.contains(methodName) && !"Manager".equals(role)) {
                 log.error("Chi manager moi co quyen truy cap");
                 call.close(Status.PERMISSION_DENIED.withDescription("Chỉ 'Manager' mới có quyền truy cập"), new Metadata());
                 return new ServerCall.Listener<>() {};
             }
 
-            // 5. Token hợp lệ, role hợp lệ -> Gắn thông tin vào Context
             Context context = Context.current()
                     .withValue(USERNAME_CONTEXT_KEY, username)
                     .withValue(ROLE_CONTEXT_KEY, role);
