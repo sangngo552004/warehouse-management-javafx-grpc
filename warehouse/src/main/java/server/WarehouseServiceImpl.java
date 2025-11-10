@@ -5,24 +5,24 @@ import server.model.Product;
 import server.model.User;
 import io.grpc.stub.StreamObserver;
 import server.service.AuthService;
-import server.service.HistoryService;
 import server.service.ProductService;
 import server.model.Transaction;
+import server.service.TransactionService;
+
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 public class WarehouseServiceImpl extends WarehouseServiceGrpc.WarehouseServiceImplBase {
 
     private final AuthService authService;
     private final ProductService productService;
-    private final HistoryService historyService;
+    private final TransactionService transactionService;
 
     public WarehouseServiceImpl(AuthService authService, ProductService productService,
-                                HistoryService historyService) {
+                                TransactionService transactionService) {
         this.authService = authService;
         this.productService = productService;
-        this.historyService = historyService;
+        this.transactionService = transactionService;
     }
 
     @Override
@@ -122,7 +122,7 @@ public class WarehouseServiceImpl extends WarehouseServiceGrpc.WarehouseServiceI
         String logResult = result.success ? "Success" : "Failed (" + result.message + ")";
 
         // GỌI HISTORY SERVICE VỚI THÔNG TIN TỪ CLIENT
-        historyService.logTransaction(
+        transactionService.logTransaction(
                 request.getClientName(), // <-- Đây là username client gửi lên
                 "IMPORT",
                 productName,
@@ -152,7 +152,7 @@ public class WarehouseServiceImpl extends WarehouseServiceGrpc.WarehouseServiceI
 
         String logResult = result.success ? "Success" : "Failed (" + result.message + ")";
 
-        historyService.logTransaction(
+        transactionService.logTransaction(
                 request.getClientName(),
                 "EXPORT",
                 productName,
@@ -173,7 +173,7 @@ public class WarehouseServiceImpl extends WarehouseServiceGrpc.WarehouseServiceI
     @Override
     public void getHistory(EmptyRequest request, StreamObserver<HistoryResponse> responseObserver) {
         HistoryResponse.Builder response = HistoryResponse.newBuilder();
-        List<Transaction> history = historyService.getHistory();
+        List<Transaction> history = transactionService.getHistory();
 
         for (Transaction modelTrans : history) {
             com.group9.warehouse.grpc.Transaction grpcTrans =

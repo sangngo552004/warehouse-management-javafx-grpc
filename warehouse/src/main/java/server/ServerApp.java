@@ -2,12 +2,18 @@ package server;
 
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
+import server.datasource.ProductDataSource;
+import server.datasource.TransactionDataSource;
+import server.datasource.UserDataSource;
+import server.repository.ProductRepository;
+import server.repository.TransactionRepository;
+import server.repository.UserRepository;
 import server.service.AuthService;
-import server.service.HistoryService;
 import server.service.ProductService;
 
 import org.slf4j.Logger; // <-- MỚI
 import org.slf4j.LoggerFactory;
+import server.service.TransactionService;
 
 import java.io.IOException;
 
@@ -19,14 +25,24 @@ public class ServerApp {
     public static void main(String[] args) {
         log.info("Đang khởi tạo các dịch vụ...");
 
-        AuthService authService = new AuthService();
-        ProductService productService = new ProductService();
-        HistoryService historyService = new HistoryService();
+        UserDataSource dataSource = new UserDataSource();
+        UserRepository userRepository = new UserRepository(dataSource);
+        AuthService authService = new AuthService(userRepository);
+
+        ProductDataSource productDataSource = new ProductDataSource();
+        ProductRepository productRepository = new ProductRepository(productDataSource);
+        ProductService productService = new ProductService(productRepository);
+
+
+        TransactionDataSource   transactionDataSource = new TransactionDataSource();
+        TransactionRepository transactionRepository = new TransactionRepository(transactionDataSource);
+        TransactionService transactionService = new TransactionService(transactionRepository);
+
 
         WarehouseServiceImpl warehouseImpl = new WarehouseServiceImpl(
                 authService,
                 productService,
-                historyService
+                transactionService
         );
 
         Server server = ServerBuilder.forPort(PORT)
