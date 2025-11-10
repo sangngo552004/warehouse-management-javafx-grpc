@@ -5,6 +5,8 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import io.grpc.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import server.service.AuthService;
 
 import java.util.Objects;
@@ -12,27 +14,26 @@ import java.util.Set;
 
 public class AuthInterceptor implements ServerInterceptor {
 
-    // Metadata key để client gửi token lên
     public static final Metadata.Key<String> AUTH_TOKEN_KEY =
             Metadata.Key.of("Authorization", Metadata.ASCII_STRING_MARSHALLER);
-
+    private static final Logger log = LoggerFactory.getLogger(AuthInterceptor.class);
     // Context key để lưu thông tin user sau khi giải mã
     public static final Context.Key<String> USERNAME_CONTEXT_KEY = Context.key("username");
     public static final Context.Key<String> ROLE_CONTEXT_KEY = Context.key("role");
 
     // Danh sách các hàm KHÔNG cần đăng nhập
     private static final Set<String> PUBLIC_METHODS = Set.of(
-            "com.group9.warehouse.grpc.AuthService/Login"
+            "AuthService/Login"
     );
 
     // Danh sách các hàm CHỈ Manager được dùng
     private static final Set<String> MANAGER_METHODS = Set.of(
-            "com.group9.warehouse.grpc.UserManagementService/GetUsers",
-            "com.group9.warehouse.grpc.UserManagementService/AddUser",
-            "com.group9.warehouse.grpc.UserManagementService/SetUserActiveStatus",
-            "com.group9.warehouse.grpc.ProductManagementService/AddProduct",
-            "com.group9.warehouse.grpc.ProductManagementService/UpdateProduct",
-            "com.group9.warehouse.grpc.ProductManagementService/SetProductActiveStatus"
+            "UserManagementService/GetUsers",
+            "UserManagementService/AddUser",
+            "UserManagementService/SetUserActiveStatus",
+            "ProductManagementService/AddProduct",
+            "ProductManagementService/UpdateProduct",
+            "ProductManagementService/SetProductActiveStatus"
     );
 
     @Override
@@ -42,7 +43,7 @@ public class AuthInterceptor implements ServerInterceptor {
             ServerCallHandler<ReqT, RespT> next) {
 
         String methodName = call.getMethodDescriptor().getFullMethodName();
-
+        log.info("AuthInterceptor: interceptCall: methodName = {}", methodName);
         // 1. Cho phép truy cập public (Login)
         if (PUBLIC_METHODS.contains(methodName)) {
             return next.startCall(call, headers);
@@ -51,6 +52,7 @@ public class AuthInterceptor implements ServerInterceptor {
         // 2. Các hàm còn lại -> Yêu cầu Token
         String token = headers.get(AUTH_TOKEN_KEY);
         if (token == null) {
+            log.error("Thieu token");
             call.close(Status.UNAUTHENTICATED.withDescription("Thiếu token (Authorization header)"), new Metadata());
             return new ServerCall.Listener<>() {};
         }
@@ -69,11 +71,13 @@ public class AuthInterceptor implements ServerInterceptor {
             String role = jwt.getClaim("role").asString();
 
             if (username == null || role == null) {
+                log.error("token khong hop le");
                 throw new JWTVerificationException("Token không hợp lệ");
             }
 
             // 4. Ủy quyền (Authorization) - Kiểm tra vai trò
             if (MANAGER_METHODS.contains(methodName) && !"Manager".equals(role)) {
+                log.error("Chi manager moi co quyen truy cap");
                 call.close(Status.PERMISSION_DENIED.withDescription("Chỉ 'Manager' mới có quyền truy cập"), new Metadata());
                 return new ServerCall.Listener<>() {};
             }
@@ -86,6 +90,7 @@ public class AuthInterceptor implements ServerInterceptor {
             return Contexts.interceptCall(context, call, headers, next);
 
         } catch (JWTVerificationException e) {
+            log.error("Token khong hop le: {}", e.getMessage());
             call.close(Status.UNAUTHENTICATED.withDescription("Token không hợp lệ hoặc hết hạn: " + e.getMessage()), new Metadata());
             return new ServerCall.Listener<>() {};
         }

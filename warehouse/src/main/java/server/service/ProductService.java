@@ -3,6 +3,8 @@ package server.service;
 import com.group9.warehouse.grpc.GetProductsRequest;
 import com.group9.warehouse.grpc.PaginationInfo;
 import com.group9.warehouse.grpc.ProductListResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import server.model.Product;
 import server.repository.ProductRepository;
 
@@ -12,12 +14,12 @@ import java.util.Optional;
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private static final Logger log = LoggerFactory.getLogger(ProductService.class);
 
     public ProductService(ProductRepository productRepository) {
         this.productRepository = productRepository;
     }
 
-    // Gói kết quả của Transaction
     public static class TransactionResponse {
         public final boolean success;
         public final String message;
@@ -30,20 +32,21 @@ public class ProductService {
         }
     }
 
-    // --- Logic Quản lý (Manager) ---
 
     public boolean addProduct(String productId, String productName) {
         if (productRepository.existsById(productId)) {
+            log.info("Product da ton tai");
             return false; // Trùng ID
         }
-        Product newProduct = new Product(productId, productName, 0, true); // Mặc định active, 0 tồn kho
+        Product newProduct = new Product(productId, productName, 0, true);
         return productRepository.save(newProduct);
     }
 
     public boolean updateProduct(String productId, String newProductName) {
         Optional<Product> productOptional = productRepository.findById(productId);
         if (productOptional.isEmpty()) {
-            return false; // Không tìm thấy
+            log.info("Product khong ton tai");
+            return false;
         }
         Product product = productOptional.get();
         product.setProductName(newProductName);
@@ -53,6 +56,7 @@ public class ProductService {
     public boolean setProductActiveStatus(String productId, boolean isActive) {
         Optional<Product> productOptional = productRepository.findById(productId);
         if (productOptional.isEmpty()) {
+            log.info("Product khong ton tai");
             return false;
         }
         Product product = productOptional.get();
@@ -60,7 +64,6 @@ public class ProductService {
         return productRepository.update(product);
     }
 
-    // --- Logic Kho (Staff) ---
 
     public ProductListResponse getPaginatedProducts(GetProductsRequest request) {
         int page = request.getPage() <= 0 ? 1 : request.getPage();
@@ -101,7 +104,6 @@ public class ProductService {
     }
 
     public List<Product> getAllProducts() {
-        // (Hàm này có thể dùng cho GetInventory)
         return productRepository.getPaginatedProducts(null, true, 1, 1000); // Tạm thời lấy 1000 sp active
     }
 

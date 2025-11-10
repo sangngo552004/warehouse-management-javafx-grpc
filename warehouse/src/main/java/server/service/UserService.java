@@ -39,9 +39,8 @@ public class UserService {
         UserListResponse.Builder responseBuilder = UserListResponse.newBuilder();
         responseBuilder.setPagination(pagination);
 
-        // Convert model User sang gRPC UserProfile
         for (User u : users) {
-            responseBuilder.addUsers(AuthServiceImpl.convertUserToProfile(u)); // Dùng chung hàm convert
+            responseBuilder.addUsers(AuthServiceImpl.convertUserToProfile(u));
         }
 
         return responseBuilder.build();
@@ -49,10 +48,10 @@ public class UserService {
 
     public boolean addUser(String username, String password, String role, String fullName, String email) {
         if (userRepository.existsByUsername(username)) {
-            return false; // Đã tồn tại
+            return false;
         }
         String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
-        User newUser = new User(username, hashedPassword, role, fullName, email, true); // Mặc định là active
+        User newUser = new User(username, hashedPassword, role, fullName, email, true);
 
         return userRepository.save(newUser);
     }

@@ -13,20 +13,16 @@ import java.util.List;
 public class TransactionService {
 
     private final TransactionRepository transactionRepository;
-    // private final TransactionDataSource transactionDataSource; (Bạn cần cái này để save)
 
-    public TransactionService(TransactionRepository transactionRepository /*, TransactionDataSource dataSource */) {
+    public TransactionService(TransactionRepository transactionRepository) {
         this.transactionRepository = transactionRepository;
-        // this.transactionDataSource = dataSource;
     }
 
     public void logTransaction(String clientName, String action, String product, int quantity, String result) {
         String timestamp = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME);
         Transaction transaction = new Transaction(timestamp, clientName, action, product, quantity, result);
+        transactionRepository.save(transaction);
 
-        // TODO: Bạn cần implement logic save trong repository
-        // transactionRepository.save(transaction);
-        System.out.println("LOG: " + transaction);
     }
 
     public HistoryResponse getPaginatedHistory(GetHistoryRequest request) {

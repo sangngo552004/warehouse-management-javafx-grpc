@@ -13,10 +13,7 @@ import server.interceptor.AuthInterceptor;
 import server.repository.ProductRepository;
 import server.repository.TransactionRepository;
 import server.repository.UserRepository;
-import server.service.AuthService;
-import server.service.ProductService;
-import server.service.TransactionService;
-import server.service.UserService;
+import server.service.*;
 
 import java.io.IOException;
 import java.net.BindException;
