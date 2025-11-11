@@ -68,6 +68,7 @@ public class DashboardController {
         try {
             EmptyRequest request = EmptyRequest.newBuilder().build();
             InventoryResponse response = warehouseStub.getInventory(request);
+            System.out.println("Received " + response.getItemsList().size() + " inventory items for Dashboard");
 
             int totalProducts = 0;
             int totalStock = 0;
@@ -118,6 +119,8 @@ public class DashboardController {
                 .setPageSize(5)
                 .build();
             HistoryResponse response = warehouseStub.getHistory(request);
+
+            System.out.println("Received " + response.getTransactionsList().size() + " transactions for Dashboard");
             
             ObservableList<String> recentActivities = FXCollections.observableArrayList();
             

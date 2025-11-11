@@ -11,10 +11,11 @@ public class UserProfile {
     private String phone;
     private String sex;
     private LocalDate dateOfBirth;
+    private boolean isActive;
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-    public UserProfile(String username, String role, String fullName, String email, String phone, String sex, String dateOfBirthStr) {
+    public UserProfile(String username, String role, String fullName, String email, String phone, String sex, String dateOfBirthStr, boolean isActive) {
         this.username = username;
         this.role = role;
         this.fullName = fullName;
@@ -22,6 +23,7 @@ public class UserProfile {
         this.phone = phone;
         this.sex = sex;
         setDateOfBirth(dateOfBirthStr);
+        this.isActive = isActive;
     }
 
     public UserProfile() {}
@@ -37,6 +39,7 @@ public class UserProfile {
     public String getDateOfBirthString() {
         return (dateOfBirth != null) ? dateOfBirth.format(DATE_FORMATTER) : "";
     }
+    public boolean isActive() { return isActive; }
 
     // Setters
     public void setUsername(String username) { this.username = username; }
@@ -53,4 +56,5 @@ public class UserProfile {
             this.dateOfBirth = null;
         }
     }
+    public void setActive(boolean isActive) { this.isActive = isActive; }
 }

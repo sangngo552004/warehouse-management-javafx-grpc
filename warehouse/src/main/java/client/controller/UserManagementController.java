@@ -1,41 +1,64 @@
 package client.controller;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import client.model.User;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.PasswordField;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.application.Platform;
+import javafx.scene.layout.VBox;
 
-import com.group9.warehouse.grpc.*; // Import mọi thứ từ gRPC
+import javafx.scene.control.TextField;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.TableCell;
+import com.group9.warehouse.grpc.BoolValue;
 
+import java.io.IOException;
+
+import client.model.UserProfile; 
+import com.group9.warehouse.grpc.*; 
 import client.service.GrpcClientService;
 
 public class UserManagementController {
 
-    // Panel Thêm
-    @FXML private TextField usernameField;
-    @FXML private PasswordField passwordField;
-    @FXML private ComboBox<String> roleComboBox;
-    @FXML private Button addButton;
-    @FXML private Label statusLabel;
-
-    // Panel Danh sách
     @FXML private Button refreshButton;
-    @FXML private TableView<User> usersTable;
-    @FXML private TableColumn<User, String> usernameCol;
-    @FXML private TableColumn<User, String> roleCol;
-    @FXML private Button deleteButton;
+    @FXML private Button showAddUserDialogButton;
+    @FXML private TableView<UserProfile> usersTable;
+
+    @FXML private TableColumn<UserProfile, String> usernameCol;
+    @FXML private TableColumn<UserProfile, String> roleCol;
+    @FXML private TableColumn<UserProfile, String> fullNameCol;
+    @FXML private TableColumn<UserProfile, String> emailCol;
+    @FXML private TableColumn<UserProfile, String> phoneCol;
+    @FXML private TableColumn<UserProfile, String> sexCol;
+    @FXML private TableColumn<UserProfile, String> dobCol;
+    @FXML private TableColumn<UserProfile, Boolean> activeCol;
+    
+    @FXML private Button setActiveButton;
+    @FXML private Button setInactiveButton;
+
+    @FXML private Button prevButton;
+    @FXML private Label paginationLabel;
+    @FXML private Button nextButton;
+
+    @FXML private TextField searchField;
+    @FXML private ComboBox<String> statusFilterComboBox;
 
     private GrpcClientService grpcClientService;
     private UserManagementServiceGrpc.UserManagementServiceBlockingStub userManagementStub;
+
+    private int currentPage = 1;
+    private int totalPages = 1;
+    private static final int PAGE_SIZE = 10;
 
     @FXML
     public void initialize() {
@@ -44,118 +67,195 @@ public class UserManagementController {
 
         usernameCol.setCellValueFactory(new PropertyValueFactory<>("username"));
         roleCol.setCellValueFactory(new PropertyValueFactory<>("role"));
+        fullNameCol.setCellValueFactory(new PropertyValueFactory<>("fullName"));
+        emailCol.setCellValueFactory(new PropertyValueFactory<>("email"));
+        phoneCol.setCellValueFactory(new PropertyValueFactory<>("phone"));
+        sexCol.setCellValueFactory(new PropertyValueFactory<>("sex"));
+        dobCol.setCellValueFactory(new PropertyValueFactory<>("dateOfBirthString"));
+
+        activeCol.setCellValueFactory(new PropertyValueFactory<>("active"));
+        activeCol.setCellFactory(column -> {
+            return new TableCell<UserProfile, Boolean>() {
+                @Override
+                protected void updateItem(Boolean item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setText(null);
+                        setStyle("");
+                    } else {
+                        if (item) {
+                            setText("Kích hoạt");
+                            setStyle("-fx-text-fill: green; -fx-font-weight: bold;");
+                        } else {
+                            setText("Vô hiệu hóa");
+                            setStyle("-fx-text-fill: red; -fx-font-weight: bold;");
+                        }
+                    }
+                }
+            };
+        });
         
-        roleComboBox.setItems(FXCollections.observableArrayList("Manager", "Staff"));
+        statusFilterComboBox.setItems(FXCollections.observableArrayList("Tất cả", "Hoạt động", "Không hoạt động"));
+        statusFilterComboBox.setValue("Tất cả");
 
         loadUserList();
     }
 
     @FXML
     private void handleRefresh() {
+        currentPage = 1;
         loadUserList();
     }
 
     private void loadUserList() {
+        String searchTerm = searchField.getText().trim();
+        String status = statusFilterComboBox.getValue();
         try {
-            GetUsersRequest request = GetUsersRequest.newBuilder()
-                .setPage(1)
-                .setPageSize(100)
-                .build();
-            UserListResponse response = userManagementStub.getUsers(request);
+            GetUsersRequest.Builder requestBuilder = GetUsersRequest.newBuilder()
+                .setPage(currentPage)
+                .setPageSize(PAGE_SIZE)
+                .setSearchTerm(searchTerm);
 
-            ObservableList<User> users = FXCollections.observableArrayList();
-            for (com.group9.warehouse.grpc.UserProfile u : response.getUsersList()) {
-                users.add(new User(u.getUsername(), u.getRole(), true));
+            if ("Kích hoạt".equals(status)) {
+                requestBuilder.setIsActive(BoolValue.newBuilder().setValue(true).build()); //
+            } else if ("Vô hiệu hóa".equals(status)) {
+                requestBuilder.setIsActive(BoolValue.newBuilder().setValue(false).build()); //
             }
 
+            GetUsersRequest request = requestBuilder.build();
+            UserListResponse response = userManagementStub.getUsers(request);
+
+            ObservableList<UserProfile> users = FXCollections.observableArrayList();
+            for (com.group9.warehouse.grpc.UserProfile u : response.getUsersList()) {
+                users.add(new UserProfile(
+                    u.getUsername(), 
+                    u.getRole(), 
+                    u.getFullName(),
+                    u.getEmail(),
+                    u.getPhone(),
+                    u.getSex(),
+                    u.getDateOfBirth(),
+                    u.getIsActive()
+                ));
+            }
             usersTable.setItems(users);
+
+            PaginationInfo pagination = response.getPagination();
+            currentPage = pagination.getPageNumber();
+            totalPages = (pagination.getTotalPages() == 0) ? 1 : pagination.getTotalPages();
+            
+            updatePaginationControls();
+
         } catch (Exception e) {
             System.out.println("Error loading user list: " + e.getMessage());
-            showStatus("Lỗi tải danh sách: " + e.getMessage(), false);
+            showAlert("Lỗi Tải Danh Sách", "Không thể tải danh sách người dùng: " + e.getMessage(), AlertType.ERROR);
+        }
+    }
+    
+    private void updatePaginationControls() {
+         Platform.runLater(() -> {
+            paginationLabel.setText(String.format("Trang %d / %d", currentPage, totalPages));
+            prevButton.setDisable(currentPage <= 1);
+            nextButton.setDisable(currentPage >= totalPages);
+        });
+    }
+
+    @FXML
+    private void handlePrevPage() {
+        if (currentPage > 1) {
+            currentPage--;
+            loadUserList();
         }
     }
 
     @FXML
-    private void handleAddUser() {
-        String username = usernameField.getText().trim();
-        String password = passwordField.getText().trim();
-        String role = roleComboBox.getValue();
+    private void handleNextPage() {
+        if (currentPage < totalPages) {
+            currentPage++;
+            loadUserList();
+        }
+    }   
 
-        if (username.isEmpty() || password.isEmpty() || role == null) {
-            showStatus("Lỗi: Tên, Mật khẩu, và Vai trò không được rỗng.", false);
+    @FXML
+    private void handleShowAddUserDialog() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/client/view/AddUserDialog.fxml"));
+            VBox page = loader.load();
+
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle("Thêm Người dùng mới");
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            dialogStage.initOwner(showAddUserDialogButton.getScene().getWindow());
+            Scene scene = new Scene(page);
+            scene.getStylesheets().add(getClass().getResource("/client/style/main.css").toExternalForm());
+            dialogStage.setScene(scene);
+
+            AddUserDialogController controller = loader.getController();
+            controller.setDialogStage(dialogStage);
+            controller.setUserManagementStub(userManagementStub);
+
+            dialogStage.showAndWait();
+
+            if (controller.isSaved()) {
+                handleRefresh();
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert("Lỗi Giao Diện", "Không thể mở biểu mẫu thêm người dùng.", AlertType.ERROR);
+        }
+    }
+
+    @FXML
+    private void handleSetActive() {
+        handleSetUserStatus(true);
+    }
+
+    @FXML
+    private void handleSetInactive() {
+        handleSetUserStatus(false);
+    }
+
+    private void handleSetUserStatus(boolean isActive) {
+        UserProfile selectedUser = usersTable.getSelectionModel().getSelectedItem();
+        
+        if (selectedUser == null) {
+            showAlert("Chưa chọn User", "Vui lòng chọn một người dùng để thay đổi trạng thái.", AlertType.WARNING);
             return;
         }
 
-        try {
-            AddUserRequest request = AddUserRequest.newBuilder()
-                    .setUsername(username)
-                    .setPassword(password)
-                    .setRole(role)
-                    .build();
+        if (selectedUser.getUsername().equals(client.service.SessionManager.getUsername())) {
+             showAlert("Lỗi", "Bạn không thể tự thay đổi trạng thái của chính mình.", AlertType.ERROR);
+             return;
+        }
 
-            ServiceResponse response = userManagementStub.addUser(request);
+        try {
+            SetUserActiveRequest request = SetUserActiveRequest.newBuilder()
+                    .setUsername(selectedUser.getUsername())
+                    .setIsActive(isActive)
+                    .build();
+            
+            ServiceResponse response = userManagementStub.setUserActiveStatus(request);
 
             if (response.getSuccess()) {
-                showStatus("Thêm user " + username + " thành công!", true);
+                String statusText = isActive ? "kích hoạt" : "vô hiệu hóa";
+                showAlert("Thành công", "Đã " + statusText + " user " + selectedUser.getUsername(), AlertType.INFORMATION);
                 loadUserList();
-                clearForm();
             } else {
-                showStatus("Lỗi thêm user: " + response.getMessage(), false);
+                showAlert("Lỗi", "Lỗi cập nhật trạng thái: " + response.getMessage(), AlertType.ERROR);
             }
         } catch (Exception e) {
-            showStatus("Lỗi gRPC: " + e.getMessage(), false);
+            showAlert("Lỗi gRPC", "Lỗi gRPC: " + e.getMessage(), AlertType.ERROR);
         }
     }
 
-    // @FXML
-    // private void handleDeleteUser() {
-    //     User selectedUser = usersTable.getSelectionModel().getSelectedItem();
-        
-    //     if (selectedUser == null) {
-    //         showStatus("Vui lòng chọn một người dùng để xóa.", false);
-    //         return;
-    //     }
-
-    //     if (selectedUser.getUsername().equals(client.service.SessionManager.getUsername())) {
-    //          showStatus("Lỗi: Bạn không thể tự xóa chính mình.", false);
-    //          return;
-    //     }
-
-    //     try {
-    //         DeleteUserRequest request = DeleteUserRequest.newBuilder()
-    //                 .setUsername(selectedUser.getUsername())
-    //                 .build();
-            
-    //         ServiceResponse response = grpcClientService.getStub().deleteUser(request);
-
-    //         if (response.getSuccess()) {
-    //             showStatus("Xóa user " + selectedUser.getUsername() + " thành công.", true);
-    //             loadUserList();
-    //         } else {
-    //             showStatus("Lỗi xóa user: " + response.getMessage(), false);
-    //         }
-    //     } catch (Exception e) {
-    //         showStatus("Lỗi gRPC: " + e.getMessage(), false);
-    //     }
-    // }
-
-    private void clearForm() {
-        usernameField.clear();
-        passwordField.clear();
-        roleComboBox.getSelectionModel().clearSelection();
-    }
-    
-    private void showStatus(String message, boolean success) {
+    private void showAlert(String title, String message, AlertType alertType) {
         Platform.runLater(() -> {
-            statusLabel.setText(message);
-            statusLabel.setManaged(true);
-            if (success) {
-                statusLabel.getStyleClass().removeAll("status-label-error");
-                statusLabel.getStyleClass().add("status-label-success");
-            } else {
-                statusLabel.getStyleClass().removeAll("status-label-success");
-                statusLabel.getStyleClass().add("status-label-error");
-            }
+            Alert alert = new Alert(alertType);
+            alert.setTitle(title);
+            alert.setHeaderText(null);
+            alert.setContentText(message);
+            alert.showAndWait();
         });
     }
 }
