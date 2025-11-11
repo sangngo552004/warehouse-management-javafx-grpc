@@ -30,6 +30,10 @@ public class GrpcClientService {
                     MethodDescriptor<ReqT, RespT> method,
                     CallOptions callOptions,
                     Channel next) {
+
+                if (method.getFullMethodName().equals("AuthService/Login")) {
+                    return next.newCall(method, callOptions);
+                }
                 
                 return new ForwardingClientCall.SimpleForwardingClientCall<ReqT, RespT>(next.newCall(method, callOptions)) {
                     @Override
@@ -62,8 +66,7 @@ public class GrpcClientService {
 
                 ClientInterceptor authInterceptor = new AuthInterceptor();
 
-                authStub = AuthServiceGrpc.newBlockingStub(channel);
-                
+                authStub = AuthServiceGrpc.newBlockingStub(channel).withInterceptors(authInterceptor);
                 userStub = UserManagementServiceGrpc.newBlockingStub(channel).withInterceptors(authInterceptor);
                 productStub = ProductManagementServiceGrpc.newBlockingStub(channel).withInterceptors(authInterceptor);
                 warehouseStub = WarehouseServiceGrpc.newBlockingStub(channel).withInterceptors(authInterceptor);

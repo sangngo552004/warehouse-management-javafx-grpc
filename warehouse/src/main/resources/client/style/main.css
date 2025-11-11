@@ -51,19 +51,38 @@
     -fx-text-fill: #333;
 }
 
-.text-field, .combo-box {
+.text-field {
     -fx-font-size: 14px;
     -fx-background-color: #ffffff;
     -fx-border-color: #ccc;
     -fx-border-width: 1;
     -fx-border-radius: 8;
     -fx-background-radius: 8;
-    -fx-padding: 8;
+    -fx-padding: 8; /* GIỮ NGUYÊN */
     -fx-prompt-text-fill: #aaa;
     -fx-transition: -fx-border-color 0.2s ease-in-out;
 }
 
-.text-field:focused, .combo-box:focused {
+/* 2. Quy tắc MỚI cho ComboBox (đặt padding vỏ ngoài về 0) */
+.combo-box {
+    -fx-font-size: 14px;
+    -fx-background-color: #ffffff;
+    -fx-border-color: #ccc;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 0; /* THAY ĐỔI QUAN TRỌNG */
+    -fx-prompt-text-fill: #aaa;
+    -fx-transition: -fx-border-color 0.2s ease-in-out;
+}
+
+.text-field:focused {
+    -fx-border-color: #0a9396;
+    -fx-border-width: 2;
+    -fx-background-color: #ffffff;
+}
+
+.combo-box:focused {
     -fx-border-color: #0a9396;
     -fx-border-width: 2;
     -fx-background-color: #ffffff;
@@ -388,3 +407,62 @@
     -fx-text-fill: white;
 }
 
+.pagination-button {
+    -fx-background-color: transparent; /* Nền trong suốt */
+    -fx-border-color: #888; /* Màu viền (thay đổi theo theme của bạn) */
+    -fx-border-radius: 50%; /* Bo tròn */
+    -fx-background-radius: 50%;
+    -fx-padding: 6 9 6 9; /* Căn lề cho icon */
+}
+
+.pagination-button .ikonli-font-icon {
+    -fx-font-size: 1.0em;
+}
+
+.pagination-button:hover {
+    -fx-background-color: #555; /* Màu khi di chuột (thay đổi theo theme) */
+}
+
+.pagination-label {
+    -fx-padding: 0 10 0 10; /* Khoảng cách cho nhãn trang */
+    -fx-font-size: 1.1em;
+    -fx-alignment: center;
+}
+
+.combo-box .list-cell {
+    -fx-background-color: #ffffff; /* NỀN TRẮNG */
+    -fx-text-fill: #333333;       /* Chữ tối (giống text-field) */
+    
+    /* Căn lề giống hệt text-field của bạn */
+    -fx-padding: 8;             
+    -fx-font-size: 14px;
+    -fx-background-radius: 7 0 0 7;
+}
+
+/* 2. Nút mũi tên bên phải */
+.combo-box .arrow-button {
+    -fx-background-color: #ffffff; /* NỀN TRẮNG */
+    -fx-background-radius: 0 7 7 0;
+}
+
+/* 3. Bản thân hình mũi tên (tam giác) */
+.combo-box .arrow {
+    /* Dùng màu xanh đậm chủ đạo của bạn */
+    -fx-background-color: #003049; 
+}
+
+/* 4. Sửa danh sách thả xuống (popup) để hợp với theme SÁNG */
+.combo-box-popup .list-cell {
+    -fx-background-color: #ffffff;
+    -fx-text-fill: #333333;
+    -fx-font-size: 14px;
+}
+
+/* 5. Khi di chuột hoặc chọn mục trong popup */
+.combo-box-popup .list-cell:hover,
+.combo-box-popup .list-cell:filled:selected {
+    /* Dùng màu nền chính (f0f4f8) khi hover */
+    -fx-background-color: #f0f4f8;
+    -fx-text-fill: #003049;       
+    -fx-font-weight: bold;
+}
