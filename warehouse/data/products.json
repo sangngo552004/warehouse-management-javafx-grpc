@@ -26,7 +26,13 @@
   {
     "productId": "KB-CO",
     "productName": "Bàn phím cơ",
-    "quantity": 20,
+    "quantity": 30,
+    "isActive": true
+  },
+  {
+    "productId": "TN-05",
+    "productName": "Tai nghe có dây",
+    "quantity": 0,
     "isActive": true
   }
 ]
