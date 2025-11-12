@@ -107,9 +107,12 @@ message UserListResponse {
 message AddUserRequest {
   string username = 1;
   string password = 2;
-  string role = 3; // "Manager" hoặc "Staff"
+  string role = 3;
   string fullName = 4;
   string email = 5;
+  string phone = 6;
+  string sex = 7;
+  string dateOfBirth = 8;
 }
 
 message SetUserActiveRequest {
