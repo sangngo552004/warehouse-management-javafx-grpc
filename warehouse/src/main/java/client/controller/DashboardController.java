@@ -103,7 +103,7 @@ public class DashboardController {
                 .build();
             UserListResponse response = userStub.getUsers(request);
             
-            int totalUsers = response.getUsersList().size();
+            long totalUsers = response.getPagination().getTotalElements();
             totalUsersLabel.setText(String.valueOf(totalUsers));
 
         } catch (Exception e) {

@@ -11,6 +11,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.layout.VBox;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -30,6 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import javafx.scene.CacheHint;
 
 public class ReportsController {
 
@@ -52,6 +55,13 @@ public class ReportsController {
     @FXML private TableColumn<Transaction, Integer> quantityCol;
     @FXML private TableColumn<Transaction, String> resultCol;
 
+    @FXML
+    private VBox mainVBox;
+    @FXML
+    private ScrollPane mainScrollPane;
+
+
+
     private GrpcClientService grpcClientService;
     private WarehouseServiceGrpc.WarehouseServiceBlockingStub warehouseStub;
 
@@ -64,7 +74,17 @@ public class ReportsController {
     public void initialize() {
         grpcClientService = GrpcClientService.getInstance();
         warehouseStub = grpcClientService.getWarehouseStub();
-        
+
+        mainVBox.setCache(true);
+        mainVBox.setCacheHint(CacheHint.SPEED);
+
+        mainScrollPane.setOnScroll(e -> {
+            double deltaY = e.getDeltaY() * 10.0; 
+            double height = mainScrollPane.getContent().getBoundsInLocal().getHeight();
+            double vValue = mainScrollPane.getVvalue();
+            mainScrollPane.setVvalue(vValue - deltaY / height);
+        });
+
         setupHistoryTable();
 
         startDatePicker.setValue(LocalDate.now().withDayOfMonth(1));
@@ -88,6 +108,8 @@ public class ReportsController {
     private void handleFilterButton() {
         loadPieChartData();
         loadFilteredHistoryData();
+        mainVBox.setCache(false);
+        mainVBox.setCache(true);
         // exportPdfButton.setDisable(false);
     }
 
