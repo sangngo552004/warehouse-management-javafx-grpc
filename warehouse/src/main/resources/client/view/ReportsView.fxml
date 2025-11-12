@@ -68,16 +68,15 @@
                             </VBox>
                         </HBox>
                         
-                        <VBox styleClass="card" spacing="10.0" VBox.vgrow="ALWAYS">
-                            <Label styleClass="card-title" text="Chi tiết Giao dịch (Theo ngày lọc)" />
-                            <TableView fx:id="filteredHistoryTable" VBox.vgrow="ALWAYS">
+                        <VBox styleClass="card" spacing="10.0" VBox.vgrow="ALWAYS" maxHeight="Infinity">
+                            <Label styleClass="card-title" text="Bảng Tổng hợp Nhập/Xuất (Theo ngày lọc)" />
+                            
+                            <TableView fx:id="summaryTable" VBox.vgrow="ALWAYS">
                                 <columns>
-                                    <TableColumn fx:id="timestampCol" prefWidth="180.0" text="Thời gian" />
-                                    <TableColumn fx:id="clientNameCol" prefWidth="120.0" text="Nhân viên" />
-                                    <TableColumn fx:id="actionCol" prefWidth="100.0" text="Hành động" />
-                                    <TableColumn fx:id="productCol" prefWidth="200.0" text="Sản phẩm" />
-                                    <TableColumn fx:id="quantityCol" prefWidth="100.0" text="Số lượng" />
-                                    <TableColumn fx:id="resultCol" prefWidth="250.0" text="Kết quả" />
+                                    <TableColumn fx:id="sumProductCol" prefWidth="400.0" text="Sản phẩm" />
+                                    <TableColumn fx:id="sumImportCol" prefWidth="180.0" text="Tổng Nhập" />
+                                    <TableColumn fx:id="sumExportCol" prefWidth="180.0" text="Tổng Xuất" />
+                                    <TableColumn fx:id="sumInventoryCol" prefWidth="150.0" text="Tồn kho hiện tại" />
                                 </columns>
                                 <columnResizePolicy>
                                     <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
