@@ -66,7 +66,7 @@ warehouse/
 ## Prerequisites
 * **JDK 17** or higher installed.
 * **Maven** installed and configured. https://maven.apache.org/download.cgi
-* **javafx sdk: https://gluonhq.com/products/javafx/
+* **JavaFX SDK** : https://gluonhq.com/products/javafx/
 
 
 ## Build Steps
