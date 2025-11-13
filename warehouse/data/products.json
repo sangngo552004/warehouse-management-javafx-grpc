@@ -27,11 +27,53 @@
     "productId": "KB-CO",
     "productName": "Bàn phím cơ",
     "quantity": 30,
-    "isActive": true
+    "isActive": false
   },
   {
     "productId": "TN-05",
     "productName": "Tai nghe có dây",
+    "quantity": 10,
+    "isActive": true
+  },
+  {
+    "productId": "TN-06",
+    "productName": "Tai nghe airport",
+    "quantity": 0,
+    "isActive": true
+  },
+  {
+    "productId": "TN-07",
+    "productName": "Test",
+    "quantity": 0,
+    "isActive": false
+  },
+  {
+    "productId": "TN-08",
+    "productName": "Test2",
+    "quantity": 0,
+    "isActive": false
+  },
+  {
+    "productId": "TN-09",
+    "productName": "Test3",
+    "quantity": 0,
+    "isActive": false
+  },
+  {
+    "productId": "TN-10",
+    "productName": "Test4",
+    "quantity": 0,
+    "isActive": false
+  },
+  {
+    "productId": "TN-11",
+    "productName": "Test4",
+    "quantity": 0,
+    "isActive": false
+  },
+  {
+    "productId": "SN-01",
+    "productName": "Màn hình SAMSUNG",
     "quantity": 0,
     "isActive": true
   }

@@ -6,7 +6,7 @@
     "fullName": "Trần Văn Quản Lý",
     "email": "manager_a@company.com",
     "phone": "0901234567",
-    "sex": "Nam",
+    "sex": "Nữ",
     "dateOfBirth": "1990-05-15",
     "isActive": true
   },
@@ -41,6 +41,76 @@
     "phone": "0987654321",
     "sex": "Nữ",
     "dateOfBirth": "2000-11-30",
+    "isActive": true
+  },
+  {
+    "username": "staff_E",
+    "hashedPassword": "$2a$10$CJ6Go1lQrsKsiUofQiFGF..z1CGkUwcVI6mf011SkgJtnObYJ3LAG",
+    "role": "Staff",
+    "fullName": "Ngô Tấn Sang",
+    "email": "sangngo552004@gmail.com",
+    "phone": "0374164299",
+    "sex": "Nữ",
+    "dateOfBirth": "2004-05-05",
+    "isActive": true
+  },
+  {
+    "username": "Test1",
+    "hashedPassword": "$2a$10$YDcmBJu7VKZ.F.lcZJKqjOMrU1oUtG/iQdw74R00fKGLUmjHznZHu",
+    "role": "Staff",
+    "fullName": "test1",
+    "email": "test1",
+    "isActive": true
+  },
+  {
+    "username": "test2",
+    "hashedPassword": "$2a$10$7CBHOSfAx0qjoQzUVqmgE.bvss8mpwQc6zyhK9xro1WBSAciGN0/C",
+    "role": "Staff",
+    "fullName": "test2",
+    "email": "test2",
+    "isActive": true
+  },
+  {
+    "username": "test3",
+    "hashedPassword": "$2a$10$5eSHn4faxpkQpKj6FgOaPus05nHupSkwg1RGSk24Ix/2Et67hYoXW",
+    "role": "Staff",
+    "fullName": "test3",
+    "email": "test3",
+    "isActive": true
+  },
+  {
+    "username": "test4",
+    "hashedPassword": "$2a$10$0G2vqpsFR5AVZaVib80lTubOa2ILGM5A3rkwb/lnJ4wdgE9mIU6Uq",
+    "role": "Staff",
+    "fullName": "test4",
+    "email": "test4",
+    "isActive": true
+  },
+  {
+    "username": "test5",
+    "hashedPassword": "$2a$10$3R.d/I4XEGtlns9MmR1xUukNIS/TmKLtgDsQ.TeoouiRdyrMUAPjy",
+    "role": "Staff",
+    "fullName": "test5",
+    "email": "test5",
+    "isActive": true
+  },
+  {
+    "username": "test6",
+    "hashedPassword": "$2a$10$EpdeCQuITpIQUP6tq2gH.u5WDccGLLnj22UyJqVORJqg.AQDJ383u",
+    "role": "Manager",
+    "fullName": "test6",
+    "email": "test6",
+    "isActive": true
+  },
+  {
+    "username": "staff_F",
+    "hashedPassword": "$2a$10$05UBNxq8hRj/eC0jTpBIguS0ceMzZ74/akJEU4fci5RuLWb565I3S",
+    "role": "Staff",
+    "fullName": "Ngô Văn F",
+    "email": "staffF@gmail.com",
+    "phone": "0374164299",
+    "sex": "Nam",
+    "dateOfBirth": "2025-11-04",
     "isActive": true
   }
 ]
