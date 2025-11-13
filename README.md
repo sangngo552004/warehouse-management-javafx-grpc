@@ -65,7 +65,9 @@ warehouse/
 
 ## Prerequisites
 * **JDK 17** or higher installed.
-* **Maven** installed and configured.
+* **Maven** installed and configured. https://maven.apache.org/download.cgi
+* **javafx sdk: https://gluonhq.com/products/javafx/
+
 
 ## Build Steps
 
@@ -91,11 +93,18 @@ warehouse/
 * **Main Class:** `server.ServerApp`
 * **Port:** Default is `9090`
 * **Data Initialization:** The server will automatically create the `data/` folder and JSON files if they don't exist.
+* ** Start by terminal:
+  ```bash
+    mvn javafx:run -P server
+    ```
 
 ### 2. Start the Client
 * **Main Class:** `client.ClientApp`
 * **Login:** Use the default credentials if initialized (or check `data/users.json`).
-
+* ** Start by terminal:
+  ```bash
+    mvn javafx:run
+    ```
 ---
 
 # 🔐 Architecture Highlights
