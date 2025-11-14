@@ -25,8 +25,8 @@ public class SessionManager {
     private static Timeline countdownTimer;
     private static Alert countdownDialog;
 
-    private static final long INACTIVITY_TIMEOUT_SECONDS = 5; // 19 phút = 1140 giây
-    private static final int COUNTDOWN_SECONDS = 5;
+    private static final long INACTIVITY_TIMEOUT_SECONDS = 1170; // 19 phút = 1140 giây
+    private static final int COUNTDOWN_SECONDS = 30;
 
     public static void createSession(String user, String userRole, String token, String name) {
         fullName = name;
