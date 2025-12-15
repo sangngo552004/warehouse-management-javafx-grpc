@@ -45,6 +45,8 @@ public class AddUserDialogController {
     public void initialize() {
         roleComboBox.setItems(FXCollections.observableArrayList("Manager", "Staff"));
         sexComboBox.setItems(FXCollections.observableArrayList("Nam", "Nữ", "Khác"));
+
+        statusLabel.setVisible(false);
     }
 
     public void setDialogStage(Stage dialogStage) {
@@ -117,12 +119,15 @@ public class AddUserDialogController {
     private void showStatus(String message, boolean success) {
         Platform.runLater(() -> {
             statusLabel.setText(message);
-            statusLabel.setManaged(true);
+            statusLabel.setVisible(true);
             statusLabel.getStyleClass().removeAll("status-label-success", "status-label-error");
             if (success) {
                 statusLabel.getStyleClass().add("status-label-success");
             } else {
                 statusLabel.getStyleClass().add("status-label-error");
+            }
+            if (dialogStage != null) {
+                dialogStage.sizeToScene(); 
             }
         });
     }

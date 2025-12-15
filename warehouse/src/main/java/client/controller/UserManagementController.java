@@ -215,6 +215,7 @@ public class UserManagementController {
             Scene scene = new Scene(page);
             scene.getStylesheets().add(getClass().getResource("/client/style/main.css").toExternalForm());
             dialogStage.setScene(scene);
+            dialogStage.sizeToScene();
 
             AddUserDialogController controller = loader.getController();
             controller.setDialogStage(dialogStage);
