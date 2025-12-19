@@ -5,6 +5,8 @@ import com.group9.warehouse.grpc.PaginationInfo;
 import com.group9.warehouse.grpc.ProductListResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import server.aspect.annotation.ReadLock;
+import server.aspect.annotation.WriteLock;
 import server.exception.ResourceAlreadyExistsException;
 import server.exception.ResourceNotFoundException;
 import server.exception.ValidationException;
@@ -28,11 +30,6 @@ public class ProductService {
     private static final Logger log = LoggerFactory.getLogger(ProductService.class);
     private final ProductMapper productMapper;
 
-    private final ReadWriteLock rwLock = new ReentrantReadWriteLock(true);
-
-    private final Lock readLock = rwLock.readLock();
-    private final Lock writeLock = rwLock.writeLock();
-
 
     public ProductService(ProductRepository productRepository,
                           TransactionRepository transactionRepository,
@@ -42,66 +39,47 @@ public class ProductService {
         this.productMapper = productMapper;
     }
 
+    @WriteLock
     public void addProduct(String productId, String productName) {
-        writeLock.lock();
-        log.info("Block : add Product");
-        try {
-            if (productRepository.existsById(productId)) {
-                throw new ResourceAlreadyExistsException("Sản phẩm ID " + productId + " đã tồn tại.");
-            }
-            Product newProduct = new Product(productId, productName, 0, true);
-
-            // Save & Check System Error
-            if (!productRepository.save(newProduct)) {
-                throw new RuntimeException("Lỗi hệ thống: Không thể lưu sản phẩm.");
-            }
-            log.info("ProductService/addProduct : Add new product with ID: {}", productId);
-        } finally {
-            writeLock.unlock();
-            log.info("Unlock: add Product");
+        if (productRepository.existsById(productId)) {
+            throw new ResourceAlreadyExistsException("Sản phẩm ID " + productId + " đã tồn tại.");
         }
+        Product newProduct = new Product(productId, productName, 0, true);
+
+        // Save & Check System Error
+        if (!productRepository.save(newProduct)) {
+            throw new RuntimeException("Lỗi hệ thống: Không thể lưu sản phẩm.");
+        }
+        log.info("ProductService/addProduct : Add new product with ID: {}", productId);
     }
 
+    @WriteLock
     public void updateProduct(String productId, String newProductName) {
-        writeLock.lock();
-        log.info("Block : update Product");
-        try {
-            Product product = productRepository.findById_NoLock(productId)
-                    .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy sản phẩm ID: " + productId));
+        Product product = productRepository.findById_NoLock(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy sản phẩm ID: " + productId));
 
-            product.setProductName(newProductName);
-            if (!productRepository.update(product)) {
-                throw new RuntimeException("Lỗi hệ thống: Không thể cập nhật sản phẩm.");
-            }
-            log.info("ProductService/updateProduct : Update product with ID: {} to {}", productId, newProductName);
-        } finally {
-            writeLock.unlock();
-            log.info("UnBlock : update Product");
+        product.setProductName(newProductName);
+        if (!productRepository.update(product)) {
+            throw new RuntimeException("Lỗi hệ thống: Không thể cập nhật sản phẩm.");
         }
+        log.info("ProductService/updateProduct : Update product with ID: {} to {}", productId, newProductName);
     }
 
+    @WriteLock
     public void setProductActiveStatus(String productId, boolean isActive) {
-        writeLock.lock();
-        log.info("Block : set status to Product");
-        try {
-            Product product = productRepository.findById_NoLock(productId)
-                    .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy sản phẩm ID: " + productId));
+        Product product = productRepository.findById_NoLock(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy sản phẩm ID: " + productId));
 
-            product.setActive(isActive);
-            if (!productRepository.update(product)) {
-                throw new RuntimeException("Lỗi hệ thống: Không thể cập nhật trạng thái.");
-            }
-            log.info("ProductService/setProductActiveStatus : Update product with ID: {} to {}", productId, isActive);
-
-        } finally {
-            writeLock.unlock();
-            log.info("UnBlock : set status to Product");
+        product.setActive(isActive);
+        if (!productRepository.update(product)) {
+            throw new RuntimeException("Lỗi hệ thống: Không thể cập nhật trạng thái.");
         }
+        log.info("ProductService/setProductActiveStatus : Update product with ID: {} to {}", productId, isActive);
+
     }
 
+    @WriteLock
     public int importProduct(String productId, int quantity, String clientName) {
-        writeLock.lock();
-        log.info("Block : import Product");
         try {
             if (quantity <= 0) throw new ValidationException("Số lượng nhập phải > 0");
 
@@ -123,15 +101,11 @@ public class ProductService {
                 logTransaction(clientName, "IMPORT", productId, quantity, "FAILED: " + e.getMessage());
             }
             throw e;
-        } finally {
-            writeLock.unlock();
-            log.info("UnBlock : import Product");
         }
     }
 
+    @WriteLock
     public int exportProduct(String productId, int quantity, String clientName) {
-        writeLock.lock();
-        log.info("Block : export Product");
         try {
             if (quantity <= 0) throw new ValidationException("Số lượng xuất phải > 0");
 
@@ -159,60 +133,41 @@ public class ProductService {
             }
             throw e;
         }
-        finally {
-            writeLock.unlock();
-            log.info("UnBlock : export Product");
-        }
     }
 
-
+    @ReadLock
     public ProductListResponse getPaginatedProducts(GetProductsRequest request) {
-        readLock.lock();
-        log.info("Block : get Paginated Products");
-        try {
-            int page = request.getPage() <= 0 ? 1 : request.getPage();
-            int pageSize = request.getPageSize() <= 0 ? 10 : request.getPageSize();
-            String searchTerm = request.getSearchTerm();
-            Boolean isActive = request.hasIsActive() ? request.getIsActive().getValue() : null;
+        int page = request.getPage() <= 0 ? 1 : request.getPage();
+        int pageSize = request.getPageSize() <= 0 ? 10 : request.getPageSize();
+        String searchTerm = request.getSearchTerm();
+        Boolean isActive = request.hasIsActive() ? request.getIsActive().getValue() : null;
 
-            List<Product> products = productRepository.getPaginatedProducts(searchTerm, isActive, page, pageSize);
-            long totalElements = productRepository.countProducts(searchTerm, isActive);
-            long totalPages = (long) Math.ceil((double) totalElements / pageSize);
+        List<Product> products = productRepository.getPaginatedProducts(searchTerm, isActive, page, pageSize);
+        long totalElements = productRepository.countProducts(searchTerm, isActive);
+        long totalPages = (long) Math.ceil((double) totalElements / pageSize);
 
-            PaginationInfo pagination = PaginationInfo.newBuilder()
-                    .setPageNumber(page)
-                    .setPageSize(pageSize)
-                    .setTotalElements(totalElements)
-                    .setTotalPages((int) totalPages)
-                    .build();
+        PaginationInfo pagination = PaginationInfo.newBuilder()
+                .setPageNumber(page)
+                .setPageSize(pageSize)
+                .setTotalElements(totalElements)
+                .setTotalPages((int) totalPages)
+                .build();
 
-            ProductListResponse.Builder responseBuilder = ProductListResponse.newBuilder();
-            responseBuilder.setPagination(pagination);
+        ProductListResponse.Builder responseBuilder = ProductListResponse.newBuilder();
+        responseBuilder.setPagination(pagination);
 
-            products.stream().
-                    map(productMapper::convertProductToGrpcProduct).
-                    forEach(responseBuilder::addProducts);
-            log.info("ProductService/getPaginatedProducts : Return {} products", products.size());
-            return responseBuilder.build();
-        } finally {
-            readLock.unlock();
-            log.info("UnBlock : get Paginated Products");
-        }
+        products.stream().
+                map(productMapper::convertProductToGrpcProduct).
+                forEach(responseBuilder::addProducts);
+        log.info("ProductService/getPaginatedProducts : Return {} products", products.size());
+        return responseBuilder.build();
+
     }
 
-
-
+    @ReadLock
     public List<Product> getAllProducts() {
-        readLock.lock();
-        log.info("Block : get All Products");
-        try {
-
-            log.info("ProductService/getAllProducts : Return all products");
-            return productRepository.getPaginatedProducts(null, true, 1, 1000);
-        } finally {
-            readLock.unlock();
-            log.info("UnBlock : get All Products");
-        }
+        log.info("ProductService/getAllProducts : Return all products");
+        return productRepository.getPaginatedProducts(null, true, 1, 1000);
     }
 
     private void logTransaction(String clientName, String action, String productName, int quantity, String result) {
