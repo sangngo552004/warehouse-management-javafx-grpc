@@ -294,5 +294,13 @@
     "product": "Laptop Dell",
     "quantity": 5,
     "result": "SUCCESS"
+  },
+  {
+    "timestamp": "2025-12-20T00:22:54.5019735",
+    "clientName": "manager_A",
+    "action": "EXPORT",
+    "product": "Laptop Dell",
+    "quantity": 10,
+    "result": "SUCCESS"
   }
 ]
