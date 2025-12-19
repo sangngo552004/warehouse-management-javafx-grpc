@@ -1,133 +1,92 @@
-# Warehouse Management System 📦
+# 📦 Warehouse Management System (Multi-Module)
 
-A **robust, distributed Warehouse Management System** built with **Java**, utilizing **gRPC** for high-performance communication and **JavaFX** for a responsive client interface. The system follows a clean **Layered Architecture** and enforces strict validation, authentication, and error handling.
+A robust, distributed Warehouse Management System (WMS) built with a Multi-Module Architecture. This system leverages gRPC for high-performance communication, JavaFX for a responsive client interface, and AspectJ (AOP) for advanced concurrency control and security.
 
----
+## 🏗️ Multi-Module Architecture
+The project is decoupled into four specialized modules to ensure high maintainability, strict encapsulation, and optimized build times:
+| Module | Primary Responsibility | Core Technologies |
+| :--- | :--- | :--- |
+| **`warehouse-parent`** | Project Orchestrator & Bill of Materials (BOM). | Maven (POM) |
+| **`common`** | gRPC definitions (.proto) & generated Java stubs. | gRPC, Protobuf |
+| **`server`** | Business logic, JSON persistence, & AOP-driven services. | AspectJ, JWT, BCrypt |
+| **`client`** | User Interface & gRPC service consumers. | JavaFX, Ikonli, PDF |
 
-## 🚀 Technology Stack
-
-| Component            | Technology                                      |
-|----------------------|-------------------------------------------------|
-| **Language**         | Java 17+                                        |
-| **Build Tool**       | Maven                                           |
-| **Communication**    | gRPC (Protocol Buffers)                         |
-| **GUI Framework**    | JavaFX                                          |
-| **Data Storage**     | JSON (via Gson) - *Simulating a NoSQL approach* |
-| **Authentication**   | JWT (JSON Web Tokens)                           |
-| **Password Hashing** | BCrypt                                          |
-| **Architecture**     | Layered (`Controller -> Service -> Repository -> DataSource`) |
-
----
-
-## 📂 Project Structure
-
-The project is organized to ensure **Separation of Concerns (SoC)** and easy maintainability.
-
-```text
-warehouse/
-├── src/main/
-│   ├── proto/                  # gRPC Definitions (Split by Domain)
-│   │   ├── common/             # Common messages (Empty, Pagination, Status)
-│   │   ├── auth/               # Authentication & Profile services
-│   │   ├── user/               # User management services
-│   │   ├── product/            # Product management services
-│   │   └── warehouse/          # Inventory & Transaction logic
-│   │
-│   ├── java/
-│   │   ├── client/             # === CLIENT SIDE (JavaFX) ===
-│   │   │   ├── controller/     # JavaFX Controllers (Handle UI events)
-│   │   │   ├── model/          # Client-side Models
-│   │   │   ├── service/        # gRPC Client Stubs & Session Management
-│   │   │   ├── util/           # Utilities (PDF Generator, Alerts)
-│   │   │   └── ClientApp.java  # Client Entry Point
-│   │   │
-│   │   └── server/             # === SERVER SIDE (gRPC) ===
-│   │       ├── container/      # Dependency Injection (ApplicationContainer)
-│   │       ├── datasource/     # Data Access to JSON files (Low-level I/O)
-│   │       ├── exception/      # Custom Business Exceptions (401, 403, 404...)
-│   │       ├── grpc/           # gRPC Service Implementations (Controller Layer)
-│   │       ├── interceptor/    # Global Error Handling & Auth Middleware
-│   │       ├── mapper/         # Entity <-> Proto converters
-│   │       ├── model/          # Server Domain Models
-│   │       ├── repository/     # Data Access Layer (Repository Pattern)
-│   │       ├── service/        # Business Logic & Transaction Management
-│   │       ├── validator/      # Request Validation Logic
-│   │       └── ServerApp.java  # Server Entry Point
-│   │
-│   └── resources/
-│       ├── client/             # FXML Views, CSS Styles, Fonts
-│       └── logback.xml         # Logging configuration
-│
-├── data/                       # JSON Storage (users.json, products.json...)
-└── pom.xml                     # Maven Dependencies & Build config
+## 📂 Detailed Project Structure
 ```
-# 🛠️ Setup & Installation
+warehouse-management-system/
+├── common/
+│   └── src/main/proto/            # Domain-driven gRPC Definitions (auth, user, product, etc.)
+|   ├── pom.xml
+├── server/
+|   ├── data                       # file json.
+│   ├── src/main/java/server/
+│   │   ├── aspect/                # AOP: Concurrency Management (@ReadLock, @WriteLock)
+│   │   ├── grpc/                  # gRPC Service Implementations (Controller Layer)
+│   │   ├── service/               # Core Business Logic & Transactional flow
+│   │   └── repository/            # Data Access Layer (JSON-based storage)
+|   |   |__ datasource/            # Working with JSON files
+│   │   └── interceptor/           # middleware of grpc ( Auth, GlobalHandlingException)
+|   |   |__ container/             # apply IoC/DI
+│   │   └── mapper/                # Map model with response and request
+|   |   |__ model/                 # Entity 
+│   │   └── validator/             # validate request
+|   |   |__ exception/             # custom exception
+|   ├── pom.xml
+├── client/
+│   ├── src/main/java/client/
+│   │   ├── controller/            # JavaFX UI Event Handlers
+│   │   ├── service/               # gRPC Client Wrappers
+│   │   └── util/                  # Helper tools (PdfGenerator, Notifications)
+│   └── src/main/resources/        # FXML Layouts, CSS Styles, & Assets
+└── pom.xml                        # Root Parent POM (Dependency Management)
+```
+## ⚙️ Technology Stack
+- **Language:** Java 11 (Optimized for AspectJ 1.9.21 compatibility)
+- **Communication:** gRPC / Protocol Buffers (v1.60.0)
+- **AOP:** AspectJ (Compile-Time Weaving)
+- **Security:** JWT (Authentication) & BCrypt (Password Hashing)
+- **Reporting:** iText 7 (Professional PDF Export)
+- **GUI:** JavaFX 13 with ControlsFX and Ikonli icons
+  
+## 🛠️ Setup & Execution
+### 1. Build the Entire System ###
+Since the modules are interdependent (Client and Server rely on Common), you must build and install the project to your local repository first:
+```
+Bash
+# Execute at the project root
+mvn clean install
+```
+*Note: This step triggers the AspectJ compiler to perform "Weaving" into the server module.*
+### 2. Run the Server ###
+```
+Bash
+# Execute from the server module
+cd server
+mvn exec:java -Dexec.mainClass="server.ServerApp"
+```
+### 3. Run the Client (JavaFX) ###
+```
+Bash
+# Execute from the client module
+cd client
+mvn javafx:run
+```
+## 🔐 Architectural Highlights
+### 1. Concurrency Management with AspectJ ###
+The system implements a custom ReadWriteLock mechanism via AOP to ensure data integrity during parallel stock operations:
+- @ReadLock: Allows concurrent access for viewing product lists without blocking.
+- @WriteLock: Ensures exclusive access for stock-altering operations (Import/Export).
+### 2. Multi-Module Optimization ###
+- **gRPC Isolation**: Keeping gRPC stubs in the *common* module prevents AspectJ from incorrectly weaving into generated code, avoiding potential bytecode corruption.
+- **Faster Development**: Changes to the UI only require re-building the client module (*mvn install -pl client*), significantly reducing turn-around time.
+### 3. Centralized Error Handling ###
+A *GlobalExceptionHandlerInterceptor* on the server-side intercepts all business logic failures and maps them to standard gRPC Status Codes (e.g., *NOT_FOUND*, *ALREADY_EXISTS*), providing clear feedback to the client.
+## 🚀 Key Features
+- [x] **Product Management:** Complete CRUD with active/inactive status control.
+- [x] **Secure Inventory Flow:** Thread-safe Import/Export operations.
+- [x] **User Management:** Role-based access control (Admin vs. Staff).
+- [x] **Real-time Dashboard:** Instant visual summaries of warehouse metrics.
+- [x] **Audit Trail:** Detailed transaction history logging.
+- [x] **Reporting:** One-click PDF report generation for inventory audits.
 
-## Prerequisites
-* **JDK 17** or higher installed.
-* **Maven** installed and configured. https://maven.apache.org/download.cgi
-* **JavaFX SDK** : https://gluonhq.com/products/javafx/
-
-
-## Build Steps
-
-1.  **Clone the repository:**
-    ```bash
-    git clone <repository-url>
-    cd warehouse
-    ```
-
-2.  **Compile and Generate gRPC Sources:**
-    ```bash
-    mvn clean install
-    ```
-    > This will automatically generate the gRPC code in `target/generated-sources/protobuf/`.
-
----
-
-# 🏃‍♂️ How to Run
-
-### 1. Start the Server
-*The server must be running before the client can connect.*
-
-* **Main Class:** `server.ServerApp`
-* **Port:** Default is `9090`
-* **Data Initialization:** The server will automatically create the `data/` folder and JSON files if they don't exist.
-* ** Start by terminal:
-  ```bash
-    mvn javafx:run -P server
-    ```
-
-### 2. Start the Client
-* **Main Class:** `client.ClientApp`
-* **Login:** Use the default credentials if initialized (or check `data/users.json`).
-* ** Start by terminal:
-  ```bash
-    mvn javafx:run
-    ```
----
-
-# 🔐 Architecture Highlights
-
-## Backend (Server)
-
-* **Strict Layering:** The `grpc` package acts as a controller and never touches the file system. It delegates tasks to the service layer.
-* **Global Exception Handling:**
-    * A `GlobalExceptionHandlerInterceptor` captures all business exceptions (e.g., `ResourceNotFoundException`, `ValidationException`) and converts them into standard gRPC error status codes (`NOT_FOUND`, `INVALID_ARGUMENT`, etc.).
-
-* **Interceptor Chain:**
-    ```text
-    GlobalExceptionHandler (Outer layer - catches errors)
-        └── AuthInterceptor (Inner layer - validates JWT & Role permissions)
-    ```
-
-* **Request Validation:** All incoming requests are validated by `RequestValidator` before processing logic.
-
-## Frontend (Client)
-
-* **Robust Error Handling:**
-    * The client uses `try-catch(StatusRuntimeException)` to gracefully handle server errors.
-* **User Feedback:**
-    * Displays specific error messages (e.g., "Product ID already exists", "Permission Denied") based on the gRPC status code returned by the server.
-* **Session Management:**
-    * JWT tokens are stored in memory to authenticate subsequent requests.
+*Developed by Group 9 (Sang, Tấn, Nguyên, Thành, Tài).*
